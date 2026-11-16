@@ -2,8 +2,8 @@
 python manage.py seed_demo
 
 Creates demo users, dish categories and dishes whose ml_label matches the
-model's class names (20 from Food-101 + 7 local dishes from our own photos),
-plus a few meals. Safe to run more than once.
+model's class names (20 from Food-101 + 8 local dishes from the Central Asian
+Food Dataset), plus a few meals. Safe to run more than once.
 Nutrition values are approximate (per 100 g) - fine for a student demo.
 """
 
@@ -47,13 +47,17 @@ DISHES = [
     ("chocolate_cake", "dessert", "Chocolate cake", "Шоколадный торт", "Шоколад торты", 371, 5, 17, 50, 100),
     ("cheesecake", "dessert", "Cheesecake", "Чизкейк", "Чизкейк", 321, 5.5, 22, 26, 120),
     ("donuts", "dessert", "Donuts", "Пончики", "Пончиктер", 452, 5, 25, 51, 80),
-    # Local dishes: not in Food-101, the model learns them from our own photos (CUSTOM_CLASSES in the notebook)
+    # Local dishes: not in Food-101, the model learns them from the Central Asian Food Dataset
+    # (CAFD_CLASSES in the notebook - the ml_label here must be the same as the class name there)
     ("plov", "kazakh", "Plov", "Плов", "Палау", 200, 6, 9, 24, 300),
     ("shashlik", "kazakh", "Shashlik", "Шашлык", "Шашлық", 240, 20, 17, 1, 200),
     ("beshbarmak", "kazakh", "Beshbarmak", "Бешбармак", "Бешбармақ", 180, 11, 9, 14, 350),
     ("manty", "kazakh", "Manty", "Манты", "Мәнті", 230, 10, 11, 23, 250),
     ("lagman", "kazakh", "Lagman", "Лагман", "Лағман", 120, 6, 4, 15, 400),
     ("baursak", "kazakh", "Baursak", "Баурсаки", "Бауырсақ", 380, 7, 18, 47, 80),
+    ("samsa", "kazakh", "Samsa", "Самса", "Самса", 300, 10, 17, 27, 120),
+    ("doner", "kazakh", "Doner", "Донер", "Дөнер", 215, 11, 10, 20, 300),
+    # Blini are NOT a model class yet (no dataset has them): users pick them manually in add-meal
     ("blini", "breakfast", "Blini (thin pancakes)", "Блины (тонкие)", "Жұқа құймақ", 220, 6, 8, 30, 150),
 ]
 
