@@ -8,6 +8,9 @@ import { ApiService } from '../../core/api.service';
 import { LanguageService } from '../../core/language.service';
 import { Dish, MealType, Prediction } from '../../core/models';
 
+/** Below this confidence the AI's best guess is not pre-selected. */
+const MIN_CONFIDENCE = 0.5;
+
 /**
  * The main AI feature:
  * 1. user picks a photo  2. backend model returns top-3 dishes
@@ -30,10 +33,19 @@ import { Dish, MealType, Prediction } from '../../core/models';
           </button>
         </div>
       }
-      @if (error()) { <p class="error">{{ error() }}</p> }
+      <!-- error() holds a translation key, so the message follows the selected language -->
+      @if (error()) { <p class="error">{{ error() | translate }}</p> }
     </div>
 
-    @if (predictions().length) {
+    <!-- The model always answers with one of its 20 classes, so a weak guess gets a warning instead of auto-select -->
+    @if (lowConfidence()) {
+      <div class="card" style="border-color: #e0a800; background: #fff8e1">
+        {{ 'addMeal.lowConfidence' | translate }}
+      </div>
+    }
+
+    <!-- Step 2 is shown after recognition, or when the manual search is open (e.g. the model is not ready) -->
+    @if (predictions().length || manualOpen()) {
       <div class="card">
         <h2>2. {{ 'addMeal.choose' | translate }}</h2>
         @for (p of predictions(); track p.label) {
@@ -43,10 +55,32 @@ import { Dish, MealType, Prediction } from '../../core/models';
             <span>
               <strong>{{ p.dish ? lang.localName(p.dish) : p.label }}</strong>
               — {{ p.confidence | percent: '1.0-0' }}
-              @if (p.dish) { <span class="muted">· {{ p.dish.calories }} kcal / 100 g</span> }
+              @if (p.dish) { <span class="muted">· {{ p.dish.calories }} {{ 'addMeal.kcalPer100' | translate }}</span> }
               @else { <span class="muted">· {{ 'addMeal.notInCatalog' | translate }}</span> }
             </span>
           </label>
+        }
+
+        <!-- Always visible: the user can overrule the AI even when it is confident (plov -> "pizza 98%") -->
+        <button class="btn secondary" type="button" (click)="openManual()">
+          {{ 'addMeal.chooseManually' | translate }}
+        </button>
+
+        @if (manualOpen()) {
+          <label style="margin-top: 12px">{{ 'addMeal.searchDish' | translate }}
+            <input type="search" [(ngModel)]="query" (ngModelChange)="searchDishes()"
+                   [placeholder]="'common.searchPlaceholder' | translate" />
+          </label>
+          @for (d of results(); track d.id) {
+            <div class="row" style="margin-bottom: 8px">
+              <button class="btn secondary" type="button" (click)="select(d, null)">
+                {{ lang.localName(d) }}
+              </button>
+              <span class="muted">{{ d.calories }} {{ 'addMeal.kcalPer100' | translate }}</span>
+            </div>
+          } @empty {
+            <p class="muted">{{ 'common.nothingFound' | translate }}</p>
+          }
         }
       </div>
     }
@@ -88,13 +122,24 @@ export class AddMealPage {
   mealType: MealType = 'lunch';
   loading = signal(false);
   saving = signal(false);
-  error = signal('');
+  error = signal(''); // translation key of the error message ('' = no error)
+
+  // Low confidence + manual search state
+  lowConfidence = signal(false);
+  manualOpen = signal(false);
+  query = '';
+  results = signal<Dish[]>([]);
 
   onFile(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.file = file;
+    // A new photo starts everything from scratch
     this.predictions.set([]);
     this.selected.set(null);
+    this.confidence = null;
+    this.error.set('');
+    this.lowConfidence.set(false);
+    this.manualOpen.set(false);
     this.previewUrl.set(file ? URL.createObjectURL(file) : null);
   }
 
@@ -102,20 +147,31 @@ export class AddMealPage {
     if (!this.file) return;
     this.loading.set(true);
     this.error.set('');
+    this.lowConfidence.set(false);
+    this.selected.set(null);
     this.api.recognize(this.file).subscribe({
       next: (res) => {
         this.predictions.set(res.predictions);
-        const best = res.predictions.find((p) => p.dish);
-        if (best) this.select(best.dish, best.confidence);
+        const best = res.predictions[0]; // predictions come sorted, the first one is the most likely
+        if (best && best.confidence >= MIN_CONFIDENCE) {
+          this.select(best.dish, best.confidence); // sure enough -> pre-select it
+        } else {
+          this.lowConfidence.set(true); // not sure -> warn and let the user choose
+          this.openManual();
+        }
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err.error?.detail ?? 'Recognition failed');
+        // 503 = weights are missing or torch is not installed on the server
+        this.error.set(err.status === 503 ? 'addMeal.modelNotReady' : 'addMeal.recognizeFailed');
+        this.predictions.set([]);
+        this.openManual(); // the user can still add the meal without the AI
         this.loading.set(false);
       },
     });
   }
 
+  /** confidence = the AI's confidence, or null when the user picked the dish manually. */
   select(dish: Dish | null, confidence: number | null): void {
     if (!dish) return;
     this.selected.set(dish);
@@ -123,7 +179,20 @@ export class AddMealPage {
     this.portion = dish.default_portion_grams;
   }
 
-  // TODO: let the user pick a dish manually from the catalog when the AI is wrong
+  /** Opens the manual search and shows the start of the catalog. */
+  openManual(): void {
+    this.manualOpen.set(true);
+    this.searchDishes();
+  }
+
+  /** Runs on every keystroke in the search box. */
+  searchDishes(): void {
+    const term = this.query;
+    this.api.dishes(term).subscribe((page) => {
+      // Ignore a slow answer if the user has typed something else since then
+      if (term === this.query) this.results.set(page.results);
+    });
+  }
 
   save(): void {
     const dish = this.selected();

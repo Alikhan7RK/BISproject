@@ -47,7 +47,13 @@
     "notInCatalog": "not in catalog",
     "confirm": "Confirm and save",
     "portion": "Portion, g",
-    "mealType": "Meal"
+    "mealType": "Meal",
+    "kcalPer100": "kcal / 100 g",
+    "lowConfidence": "Not sure what this is — please choose the dish manually",
+    "chooseManually": "Not right? Choose manually",
+    "searchDish": "Search the dish catalog",
+    "modelNotReady": "AI model is not ready — choose the dish manually",
+    "recognizeFailed": "Could not recognize the photo — choose the dish manually"
   },
   "common": {
     "save": "Save",
