@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard": "Басты бет",
+    "addMeal": "Тамақ қосу",
+    "history": "Тарих",
+    "dishes": "Тағамдар",
+    "recommendations": "Ұсыныстар",
+    "clients": "Менің клиенттерім",
+    "search": "Іздеу",
+    "profile": "Профиль",
+    "logout": "Шығу"
+  },
+  "auth": {
+    "loginTitle": "NutriScan-ға кіру",
+    "registerTitle": "Тіркелу",
+    "username": "Пайдаланушы аты",
+    "password": "Құпиясөз",
+    "login": "Кіру",
+    "register": "Тіркелу",
+    "loginError": "Логин немесе құпиясөз қате",
+    "noAccount": "Аккаунтыңыз жоқ па?",
+    "haveAccount": "Аккаунтыңыз бар ма?"
+  },
+  "dashboard": {
+    "hello": "Сәлем, {{name}}!",
+    "today": "Бүгін",
+    "todayMeals": "Бүгінгі тамақтар",
+    "noMeals": "Бүгін әлі тамақ қосылмаған"
+  },
+  "nutrients": {
+    "protein": "Ақуыз",
+    "fat": "Майлар",
+    "carbs": "Көмірсулар"
+  },
+  "mealType": {
+    "breakfast": "Таңғы ас",
+    "lunch": "Түскі ас",
+    "dinner": "Кешкі ас",
+    "snack": "Жеңіл тамақ"
+  },
+  "addMeal": {
+    "title": "ЖИ арқылы тамақ қосу",
+    "photo": "Тамақтың суретін жүктеңіз",
+    "recognize": "Тағамды тану",
+    "recognizing": "Танып жатыр…",
+    "choose": "Дұрыс тағамды таңдаңыз",
+    "notInCatalog": "каталогта жоқ",
+    "confirm": "Растап, сақтаңыз",
+    "portion": "Порция, г",
+    "mealType": "Тамақ уақыты"
+  },
+  "common": {
+    "save": "Сақтау",
+    "saved": "Сақталды",
+    "delete": "Жою",
+    "searchPlaceholder": "Іздеу үшін жазыңыз…",
+    "nothingFound": "Ештеңе табылмады"
+  },
+  "dishes": {
+    "allCategories": "Барлық санаттар"
+  },
+  "search": {
+    "myMeals": "Менің тамақтарым",
+    "nutritionists": "Нутрициологтар"
+  },
+  "history": {
+    "date": "Күні",
+    "dish": "Тағам"
+  },
+  "role": {
+    "user": "Пайдаланушы",
+    "nutritionist": "Нутрициолог",
+    "admin": "Әкімші"
+  },
+  "profile": {
+    "goal": "Менің мақсатым",
+    "goalType": "Мақсат",
+    "day": "күн"
+  },
+  "goal": {
+    "lose": "Салмақ тастау",
+    "keep": "Салмақты сақтау",
+    "gain": "Салмақ қосу"
+  },
+  "recommendations": {
+    "markRead": "Оқылды деп белгілеу"
+  }
+}

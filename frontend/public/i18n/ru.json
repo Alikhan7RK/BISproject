@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard": "Главная",
+    "addMeal": "Добавить еду",
+    "history": "История",
+    "dishes": "Блюда",
+    "recommendations": "Рекомендации",
+    "clients": "Мои клиенты",
+    "search": "Поиск",
+    "profile": "Профиль",
+    "logout": "Выйти"
+  },
+  "auth": {
+    "loginTitle": "Вход в NutriScan",
+    "registerTitle": "Регистрация",
+    "username": "Имя пользователя",
+    "password": "Пароль",
+    "login": "Войти",
+    "register": "Зарегистрироваться",
+    "loginError": "Неверный логин или пароль",
+    "noAccount": "Нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?"
+  },
+  "dashboard": {
+    "hello": "Привет, {{name}}!",
+    "today": "Сегодня",
+    "todayMeals": "Приёмы пищи сегодня",
+    "noMeals": "Сегодня ещё ничего не добавлено"
+  },
+  "nutrients": {
+    "protein": "Белки",
+    "fat": "Жиры",
+    "carbs": "Углеводы"
+  },
+  "mealType": {
+    "breakfast": "Завтрак",
+    "lunch": "Обед",
+    "dinner": "Ужин",
+    "snack": "Перекус"
+  },
+  "addMeal": {
+    "title": "Добавить еду с помощью ИИ",
+    "photo": "Загрузите фото еды",
+    "recognize": "Распознать блюдо",
+    "recognizing": "Распознаём…",
+    "choose": "Выберите правильное блюдо",
+    "notInCatalog": "нет в каталоге",
+    "confirm": "Подтвердите и сохраните",
+    "portion": "Порция, г",
+    "mealType": "Приём пищи"
+  },
+  "common": {
+    "save": "Сохранить",
+    "saved": "Сохранено",
+    "delete": "Удалить",
+    "searchPlaceholder": "Введите для поиска…",
+    "nothingFound": "Ничего не найдено"
+  },
+  "dishes": {
+    "allCategories": "Все категории"
+  },
+  "search": {
+    "myMeals": "Мои приёмы пищи",
+    "nutritionists": "Нутрициологи"
+  },
+  "history": {
+    "date": "Дата",
+    "dish": "Блюдо"
+  },
+  "role": {
+    "user": "Пользователь",
+    "nutritionist": "Нутрициолог",
+    "admin": "Администратор"
+  },
+  "profile": {
+    "goal": "Моя цель",
+    "goalType": "Цель",
+    "day": "день"
+  },
+  "goal": {
+    "lose": "Похудеть",
+    "keep": "Поддерживать вес",
+    "gain": "Набрать вес"
+  },
+  "recommendations": {
+    "markRead": "Отметить прочитанным"
+  }
+}

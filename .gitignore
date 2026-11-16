@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+backend/.env
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Model weights are large: share them via Google Drive / GitHub Release, not git
+backend/ml/weights/*
+!backend/ml/weights/.gitkeep
+
+# Angular / Node
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

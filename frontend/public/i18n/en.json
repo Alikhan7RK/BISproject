@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "addMeal": "Add meal",
+    "history": "History",
+    "dishes": "Dishes",
+    "recommendations": "Recommendations",
+    "clients": "My clients",
+    "search": "Search",
+    "profile": "Profile",
+    "logout": "Log out"
+  },
+  "auth": {
+    "loginTitle": "Log in to NutriScan",
+    "registerTitle": "Create an account",
+    "username": "Username",
+    "password": "Password",
+    "login": "Log in",
+    "register": "Sign up",
+    "loginError": "Wrong username or password",
+    "noAccount": "No account?",
+    "haveAccount": "Already have an account?"
+  },
+  "dashboard": {
+    "hello": "Hello, {{name}}!",
+    "today": "Today",
+    "todayMeals": "Today's meals",
+    "noMeals": "No meals yet today"
+  },
+  "nutrients": {
+    "protein": "Protein",
+    "fat": "Fat",
+    "carbs": "Carbs"
+  },
+  "mealType": {
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack": "Snack"
+  },
+  "addMeal": {
+    "title": "Add a meal with AI",
+    "photo": "Upload a photo of your meal",
+    "recognize": "Recognize dish",
+    "recognizing": "Recognizing…",
+    "choose": "Choose the right dish",
+    "notInCatalog": "not in catalog",
+    "confirm": "Confirm and save",
+    "portion": "Portion, g",
+    "mealType": "Meal"
+  },
+  "common": {
+    "save": "Save",
+    "saved": "Saved",
+    "delete": "Delete",
+    "searchPlaceholder": "Type to search…",
+    "nothingFound": "Nothing found"
+  },
+  "dishes": {
+    "allCategories": "All categories"
+  },
+  "search": {
+    "myMeals": "My meals",
+    "nutritionists": "Nutritionists"
+  },
+  "history": {
+    "date": "Date",
+    "dish": "Dish"
+  },
+  "role": {
+    "user": "User",
+    "nutritionist": "Nutritionist",
+    "admin": "Admin"
+  },
+  "profile": {
+    "goal": "My goal",
+    "goalType": "Goal",
+    "day": "day"
+  },
+  "goal": {
+    "lose": "Lose weight",
+    "keep": "Keep weight",
+    "gain": "Gain weight"
+  },
+  "recommendations": {
+    "markRead": "Mark as read"
+  }
+}

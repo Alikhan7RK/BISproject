@@ -1,0 +1,33 @@
+<header class="topbar">
+  <a class="brand" routerLink="/dashboard">NutriScan</a>
+
+  @if (auth.isLoggedIn()) {
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">{{ 'nav.dashboard' | translate }}</a>
+      <a routerLink="/add-meal" routerLinkActive="active">{{ 'nav.addMeal' | translate }}</a>
+      <a routerLink="/history" routerLinkActive="active">{{ 'nav.history' | translate }}</a>
+      <a routerLink="/dishes" routerLinkActive="active">{{ 'nav.dishes' | translate }}</a>
+      <a routerLink="/recommendations" routerLinkActive="active">{{ 'nav.recommendations' | translate }}</a>
+      @if (auth.isNutritionist()) {
+        <a routerLink="/clients" routerLinkActive="active">{{ 'nav.clients' | translate }}</a>
+      }
+      <a routerLink="/search" routerLinkActive="active">{{ 'nav.search' | translate }}</a>
+    </nav>
+  }
+
+  <div class="right">
+    <div class="langs">
+      @for (l of lang.languages; track l.code) {
+        <button type="button" [class.active]="lang.current() === l.code" (click)="lang.use(l.code)">{{ l.label }}</button>
+      }
+    </div>
+    @if (auth.user(); as user) {
+      <a routerLink="/profile" class="user">{{ user.username }}</a>
+      <button type="button" class="link" (click)="auth.logout()">{{ 'nav.logout' | translate }}</button>
+    }
+  </div>
+</header>
+
+<main class="page">
+  <router-outlet />
+</main>

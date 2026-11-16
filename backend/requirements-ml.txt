@@ -1,0 +1,5 @@
+# Needed only to run the food recognition model (CPU is enough for predictions).
+# Install: pip install -r requirements-ml.txt
+# Faster, smaller CPU-only build: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch>=2.5
+torchvision>=0.20

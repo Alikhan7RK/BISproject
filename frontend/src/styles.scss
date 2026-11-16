@@ -1,0 +1,94 @@
+// Global styles and shared UI classes. Keep pages simple: use these classes.
+
+:root {
+  --primary: #1f8a4c;
+  --primary-soft: #e6f4ec;
+  --danger: #c0392b;
+  --text: #1d2420;
+  --muted: #66706a;
+  --border: #dde3df;
+  --surface: #ffffff;
+  --bg: #f6f8f7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1 { font-size: 26px; margin: 0 0 16px; }
+h2 { font-size: 20px; margin: 0 0 12px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.muted { color: var(--muted); }
+.error { color: var(--danger); }
+
+label { display: block; font-size: 14px; margin-bottom: 12px; }
+
+input, select, textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:disabled { opacity: 0.5; cursor: default; }
+  &.secondary { background: var(--primary-soft); color: var(--primary); }
+  &.danger { background: var(--danger); }
+}
+
+button.link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+}
+
+.auth-box { max-width: 380px; margin: 60px auto; }
+
+.progress {
+  height: 10px;
+  background: var(--primary-soft);
+  border-radius: 6px;
+  overflow: hidden;
+
+  > div { height: 100%; background: var(--primary); }
+  &.over > div { background: var(--danger); }
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
