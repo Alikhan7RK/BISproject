@@ -1,8 +1,9 @@
 """
 python manage.py seed_demo
 
-Creates demo users, dish categories and dishes whose ml_label matches
-Food-101 class names, plus a few meals. Safe to run more than once.
+Creates demo users, dish categories and dishes whose ml_label matches the
+model's class names (20 from Food-101 + 7 local dishes from our own photos),
+plus a few meals. Safe to run more than once.
 Nutrition values are approximate (per 100 g) - fine for a student demo.
 """
 
@@ -20,6 +21,7 @@ CATEGORIES = {
     "salad": ("Salads", "Салаты", "Салаттар"),
     "dessert": ("Desserts", "Десерты", "Десерттер"),
     "breakfast": ("Breakfast", "Завтрак", "Таңғы ас"),
+    "kazakh": ("Kazakh & Central Asian", "Казахская и среднеазиатская кухня", "Қазақ және Орта Азия асханасы"),
 }
 
 # ml_label, category, en, ru, kk, kcal, protein, fat, carbs, portion
@@ -37,13 +39,22 @@ DISHES = [
     ("steak", "main", "Steak", "Стейк", "Стейк", 271, 25, 19, 0, 200),
     ("caesar_salad", "salad", "Caesar salad", "Салат Цезарь", "Цезарь салаты", 190, 7, 15, 7, 250),
     ("greek_salad", "salad", "Greek salad", "Греческий салат", "Грек салаты", 110, 3, 9, 5, 250),
-    ("pancakes", "breakfast", "Pancakes", "Блины", "Құймақ", 227, 6, 10, 28, 150),
+    # "pancakes" = thick American ones (Food-101); thin blini are a separate dish below
+    ("pancakes", "breakfast", "Pancakes (thick)", "Панкейки", "Панкейк", 227, 6, 10, 28, 150),
     ("omelette", "breakfast", "Omelette", "Омлет", "Омлет", 154, 11, 12, 1, 150),
     ("waffles", "breakfast", "Waffles", "Вафли", "Вафли", 291, 8, 14, 33, 100),
     ("ice_cream", "dessert", "Ice cream", "Мороженое", "Балмұздақ", 207, 3.5, 11, 24, 100),
     ("chocolate_cake", "dessert", "Chocolate cake", "Шоколадный торт", "Шоколад торты", 371, 5, 17, 50, 100),
     ("cheesecake", "dessert", "Cheesecake", "Чизкейк", "Чизкейк", 321, 5.5, 22, 26, 120),
     ("donuts", "dessert", "Donuts", "Пончики", "Пончиктер", 452, 5, 25, 51, 80),
+    # Local dishes: not in Food-101, the model learns them from our own photos (CUSTOM_CLASSES in the notebook)
+    ("plov", "kazakh", "Plov", "Плов", "Палау", 200, 6, 9, 24, 300),
+    ("shashlik", "kazakh", "Shashlik", "Шашлык", "Шашлық", 240, 20, 17, 1, 200),
+    ("beshbarmak", "kazakh", "Beshbarmak", "Бешбармак", "Бешбармақ", 180, 11, 9, 14, 350),
+    ("manty", "kazakh", "Manty", "Манты", "Мәнті", 230, 10, 11, 23, 250),
+    ("lagman", "kazakh", "Lagman", "Лагман", "Лағман", 120, 6, 4, 15, 400),
+    ("baursak", "kazakh", "Baursak", "Баурсаки", "Бауырсақ", 380, 7, 18, 47, 80),
+    ("blini", "breakfast", "Blini (thin pancakes)", "Блины (тонкие)", "Жұқа құймақ", 220, 6, 8, 30, 150),
 ]
 
 USERS = [

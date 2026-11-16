@@ -41,6 +41,10 @@ class Dish(models.Model):
     def save(self, *args, **kwargs):
         names = [self.name_en, self.name_ru, self.name_kk, self.ml_label or ""]
         self.search_index = " ".join(n.lower() for n in names if n)
+        # update_or_create() saves only the fields it was given (update_fields),
+        # so add search_index to that list, otherwise a renamed dish keeps the old index.
+        if kwargs.get("update_fields") is not None:
+            kwargs["update_fields"] = {*kwargs["update_fields"], "search_index"}
         super().save(*args, **kwargs)
 
     def __str__(self):

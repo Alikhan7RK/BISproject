@@ -30,8 +30,9 @@ Never hardcode user-visible text in templates.
 
 - **Backend:** Django 6 + Django REST Framework, SimpleJWT auth, django-filter,
   django-cors-headers, jazzmin, SQLite (dev). Python 3.12+.
-- **ML:** PyTorch + torchvision, ResNet-18 fine-tuned on Food-101 (20 classes) in
-  Google Colab. Django only runs predictions (CPU).
+- **ML:** PyTorch + torchvision, ResNet-18 fine-tuned in Google Colab on 27 classes:
+  20 from Food-101 + 7 local dishes from our own photos (plov, shashlik, beshbarmak, manty,
+  lagman, baursak, blini). Django only runs predictions (CPU).
 - **Frontend:** Angular 20, standalone components, signals, new control flow
   (`@if`, `@for`), ngx-translate, Chart.js. No NgModules.
 
@@ -42,7 +43,7 @@ backend/
   config/            settings.py (reads .env), urls.py
   accounts/          custom User (role, preferred_language, nutritionist FK), JWT auth, /api/auth/*
   nutrition/         DishCategory, Dish, Meal, NutritionGoal, Recommendation + API + admin
-    management/commands/seed_demo.py   demo users + 20 dishes + meals
+    management/commands/seed_demo.py   demo users + 27 dishes + meals
   ml/
     predictor.py     loads weights once (singleton), predict(image) -> top-3 labels
     views.py         POST /api/ml/recognize/, GET /api/ml/status/
@@ -68,6 +69,16 @@ docs/                prompts and notes
    (Resize 224×224, ImageNet mean/std) must be identical in the notebook and `predictor.py`.**
    If you change one, change the other.
 6. `CLASSES` in the notebook must match `Dish.ml_label` values in `seed_demo.py`.
+   `CLASSES = FOOD101_CLASSES + CUSTOM_CLASSES` (20 + 7 = 27). `predictor.py` reads the number
+   of classes from `classes.json`, so adding a class never needs a backend code change.
+7. Our own photos are uploaded to Colab as `kz_food.zip` (NOT in git) with one folder per
+   custom class: `kz_food/<class_name>/*.jpg`, folder names = `CUSTOM_CLASSES`, ~100–150 photos
+   each. The notebook skips broken images, splits each class 80% train / 20% test with a fixed
+   seed, and uses a `WeightedRandomSampler` so the small custom classes are seen as often as the
+   750-image Food-101 classes.
+8. To retrain: update `kz_food.zip` → run all notebook cells → replace `food_model.pth` and
+   `classes.json` in `backend/ml/weights/` → `python manage.py seed_demo` → restart Django.
+   New dish = new folder + name in `CUSTOM_CLASSES` + row in `seed_demo.py` with the same `ml_label`.
 
 ## Commands
 
@@ -123,7 +134,8 @@ npx ng build                                            # must pass with no erro
 
 ## Open TODOs (in rough order)
 
-- [ ] Train the model in Colab, put weights in `backend/ml/weights/`, test with real photos
+- [x] Train the 20-class Food-101 model in Colab, test with real photos
+- [ ] Collect ~100–150 photos for each of the 7 custom classes, retrain on 27 classes, replace the weights
 - [ ] Add-meal: manual dish search when the AI is wrong; 503 → friendly "model not ready" message
 - [ ] Dashboard: weekly calories bar chart (Chart.js)
 - [ ] History: date filter + pagination

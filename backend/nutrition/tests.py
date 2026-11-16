@@ -93,8 +93,25 @@ class ApiSmokeTests(TestCase):
 
     def test_recognize_without_model_returns_503(self):
         client = self.login("demo", "demo12345")
+        from unittest import mock
+
         from django.core.files.uploadedfile import SimpleUploadedFile
 
+        from ml.predictor import ModelNotReady
+
         photo = SimpleUploadedFile("x.jpg", b"not-really-an-image", content_type="image/jpeg")
-        res = client.post("/api/ml/recognize/", {"photo": photo}, format="multipart")
+        # Pretend the weights are missing, so the test gives the same result
+        # on a machine with a trained model and on one without it.
+        with mock.patch("ml.views.FoodPredictor.get", side_effect=ModelNotReady("no weights")):
+            res = client.post("/api/ml/recognize/", {"photo": photo}, format="multipart")
         self.assertEqual(res.status_code, 503)
+
+    def test_seed_renames_dish_and_updates_search(self):
+        # seed_demo renamed "Pancakes" -> "Pancakes (thick)" / "Панкейки"; search must follow the new names
+        client = self.login("demo", "demo12345")
+        labels = lambda term: {d["ml_label"] for d in client.get("/api/dishes/", {"search": term}).data["results"]}
+        Dish.objects.filter(ml_label="pancakes").update(name_ru="Блины", search_index="pancakes блины")
+        call_command("seed_demo", verbosity=0)
+        self.assertEqual(labels("панкейк"), {"pancakes"})
+        self.assertEqual(labels("блины"), {"blini"})
+        self.assertEqual(labels("плов"), {"plov"})
