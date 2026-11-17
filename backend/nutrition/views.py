@@ -2,8 +2,10 @@ from datetime import date, timedelta
 
 from django.db.models import Q
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,6 +15,7 @@ from accounts.serializers import PublicNutritionistSerializer
 
 from .models import Dish, DishCategory, Meal, NutritionGoal, Recommendation
 from .serializers import (
+    ClientSerializer,
     DishCategorySerializer,
     DishSerializer,
     MealSerializer,
@@ -45,7 +48,16 @@ class DishViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
 
-MAX_WEEKLY_DAYS = 31  # upper limit for /api/meals/weekly/?days=
+MAX_WEEKLY_DAYS = 31  # upper limit for ?days= (weekly chart, client meals)
+
+
+def _days_param(request, default=7) -> int:
+    """Reads ?days=N (1..MAX_WEEKLY_DAYS). Not a number -> 400."""
+    try:
+        days = int(request.query_params.get("days", default))
+    except ValueError:
+        raise ValidationError({"detail": "days must be a number."})
+    return max(1, min(days, MAX_WEEKLY_DAYS))
 
 
 class MealViewSet(viewsets.ModelViewSet):
@@ -87,12 +99,7 @@ class MealViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def weekly(self, request):
         """Calories per day for the last N days (?days=7, max 31), oldest first. Days without meals = 0."""
-        try:
-            days = int(request.query_params.get("days", 7))
-        except ValueError:
-            return Response({"detail": "days must be a number."}, status=400)
-        days = max(1, min(days, MAX_WEEKLY_DAYS))
-
+        days = _days_param(request)
         today = timezone.localdate()  # today in the project time zone (Asia/Almaty)
         start = today - timedelta(days=days - 1)
         per_day = {start + timedelta(days=i): 0.0 for i in range(days)}  # every day starts at 0
@@ -125,6 +132,7 @@ class RecommendationViewSet(
 
     serializer_class = RecommendationSerializer
     search_fields = ["title", "text"]
+    filterset_fields = ["client"]  # ?client=<id>: a nutritionist's recommendations for one client
 
     def get_queryset(self):
         user = self.request.user
@@ -150,27 +158,45 @@ class RecommendationViewSet(
         return Response(self.get_serializer(rec).data)
 
 
+def my_clients(nutritionist):
+    """The ONLY place that decides who is a nutritionist's client. Every client view starts here."""
+    return User.objects.filter(nutritionist=nutritionist)
+
+
 class ClientListView(generics.ListAPIView):
-    """Nutritionist: list of my clients."""
+    """Nutritionist: list of my clients with today's calories vs goal."""
 
     permission_classes = [permissions.IsAuthenticated, IsNutritionist]
-    serializer_class = PublicNutritionistSerializer  # same public fields work for clients
+    serializer_class = ClientSerializer
     search_fields = ["username", "first_name", "last_name"]
 
     def get_queryset(self):
-        return User.objects.filter(nutritionist=self.request.user).order_by("username")
+        return my_clients(self.request.user).order_by("username")
+
+
+class ClientDetailView(generics.RetrieveAPIView):
+    """Nutritionist: one of my clients. Someone else's client -> 404."""
+
+    permission_classes = [permissions.IsAuthenticated, IsNutritionist]
+    serializer_class = ClientSerializer
+    lookup_url_kwarg = "client_id"
+
+    def get_queryset(self):
+        return my_clients(self.request.user)
 
 
 class ClientMealsView(generics.ListAPIView):
-    """Nutritionist: meals of one of my clients."""
+    """Nutritionist: meals of one of my clients for the last N days (?days=7), newest first, no paging."""
 
     permission_classes = [permissions.IsAuthenticated, IsNutritionist]
     serializer_class = MealSerializer
+    pagination_class = None  # a week of meals is small; the page groups them by day
 
     def get_queryset(self):
-        return Meal.objects.filter(
-            user_id=self.kwargs["client_id"], user__nutritionist=self.request.user
-        ).select_related("dish", "dish__category")
+        # 404 (not an empty list) if this user is not my client
+        client = get_object_or_404(my_clients(self.request.user), pk=self.kwargs["client_id"])
+        start = timezone.localdate() - timedelta(days=_days_param(self.request) - 1)
+        return Meal.objects.filter(user=client, eaten_at__date__gte=start).select_related("dish", "dish__category")
 
 
 class GlobalSearchView(APIView):

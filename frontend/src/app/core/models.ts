@@ -33,6 +33,12 @@ export interface PublicUser {
   bio: string;
 }
 
+/** A nutritionist's client (GET /api/clients/ and /api/clients/:id/) */
+export interface Client extends PublicUser {
+  today_calories: number;
+  daily_calories: number; // the client's goal
+}
+
 export interface DishCategory {
   id: number;
   name_en: string;

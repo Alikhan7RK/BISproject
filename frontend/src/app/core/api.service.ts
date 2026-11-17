@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import {
+  Client,
   DayCalories,
   DaySummary,
   Dish,
@@ -89,8 +90,10 @@ export class ApiService {
   }
 
   // Recommendations & nutritionists
-  recommendations() {
-    return this.http.get<Paginated<Recommendation>>(`${this.api}/recommendations/`);
+  /** Optional clientId: a nutritionist's recommendations for one client. */
+  recommendations(clientId?: number) {
+    const params = clientId ? new HttpParams().set('client', clientId) : undefined;
+    return this.http.get<Paginated<Recommendation>>(`${this.api}/recommendations/`, { params });
   }
   createRecommendation(data: { client: number; title: string; text: string }) {
     return this.http.post<Recommendation>(`${this.api}/recommendations/`, data);
@@ -104,10 +107,16 @@ export class ApiService {
     });
   }
   clients() {
-    return this.http.get<Paginated<PublicUser>>(`${this.api}/clients/`);
+    return this.http.get<Paginated<Client>>(`${this.api}/clients/`);
   }
-  clientMeals(clientId: number) {
-    return this.http.get<Paginated<Meal>>(`${this.api}/clients/${clientId}/meals/`);
+  client(clientId: number) {
+    return this.http.get<Client>(`${this.api}/clients/${clientId}/`);
+  }
+  /** Client's meals for the last `days` days, newest first (not paginated). */
+  clientMeals(clientId: number, days = 7) {
+    return this.http.get<Meal[]>(`${this.api}/clients/${clientId}/meals/`, {
+      params: new HttpParams().set('days', days),
+    });
   }
 
   // Global search: dishes, my meals, nutritionists

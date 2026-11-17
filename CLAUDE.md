@@ -148,7 +148,7 @@ npx ng build                                            # must pass with no erro
 - [ ] Add-meal: manual dish search when the AI is wrong; 503 → friendly "model not ready" message
 - [x] Dashboard: weekly calories bar chart (Chart.js), `GET /api/meals/weekly/?days=7`
 - [ ] History: date filter + pagination
-- [ ] Clients page: open client → meals + "write recommendation" form
+- [x] Clients page: open client → meals (last 7 days by day) + "write recommendation" form
 - [ ] Profile: edit name/email/bio/avatar, choose a nutritionist
 - [ ] AI advice: `POST /api/advice/` calls an LLM with today's meals + goal (key in `LLM_API_KEY`)
 - [ ] Notifications: badge for unread recommendations

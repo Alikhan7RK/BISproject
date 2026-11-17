@@ -30,7 +30,15 @@
     "withinGoal": "Within goal",
     "aboveGoal": "Above goal",
     "dailyGoal": "Daily goal",
-    "weekdays": { "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat", "sun": "Sun" }
+    "weekdays": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    }
   },
   "nutrients": {
     "protein": "Protein",
@@ -95,5 +103,22 @@
   },
   "recommendations": {
     "markRead": "Mark as read"
+  },
+  "clients": {
+    "today": "Today",
+    "back": "All clients",
+    "notFound": "Client not found",
+    "lastDays": "Meals in the last {{days}} days",
+    "total": "Total",
+    "noMealsDay": "No meals",
+    "writeRec": "Write a recommendation",
+    "recTitle": "Title",
+    "recText": "Text",
+    "send": "Send",
+    "sent": "Recommendation sent",
+    "sendError": "Could not send the recommendation",
+    "recList": "Recommendations for this client",
+    "read": "read",
+    "unread": "not read yet"
   }
 }

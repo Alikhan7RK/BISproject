@@ -1,6 +1,27 @@
+from django.utils import timezone
 from rest_framework import serializers
 
+from accounts.serializers import PublicNutritionistSerializer
+
 from .models import Dish, DishCategory, Meal, NutritionGoal, Recommendation
+
+
+class ClientSerializer(PublicNutritionistSerializer):
+    """A nutritionist's client: public profile + today's calories and their daily goal."""
+
+    today_calories = serializers.SerializerMethodField()
+    daily_calories = serializers.SerializerMethodField()
+
+    class Meta(PublicNutritionistSerializer.Meta):
+        fields = PublicNutritionistSerializer.Meta.fields + ["today_calories", "daily_calories"]
+
+    def get_today_calories(self, user):
+        meals = Meal.objects.filter(user=user, eaten_at__date=timezone.localdate()).select_related("dish")
+        return round(sum(m.calories for m in meals))
+
+    def get_daily_calories(self, user):
+        goal, _ = NutritionGoal.objects.get_or_create(user=user)
+        return goal.daily_calories
 
 
 class DishCategorySerializer(serializers.ModelSerializer):

@@ -25,6 +25,11 @@ export const routes: Routes = [
         canActivate: [nutritionistGuard],
         loadComponent: () => import('./pages/clients/clients').then((m) => m.ClientsPage),
       },
+      {
+        path: 'clients/:id',
+        canActivate: [nutritionistGuard],
+        loadComponent: () => import('./pages/client-detail/client-detail').then((m) => m.ClientDetailPage),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },

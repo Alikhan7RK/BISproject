@@ -125,13 +125,19 @@ export class DashboardPage implements OnInit, OnDestroy {
             {
               type: 'line', label: t['dashboard.dailyGoal'], data: this.week.map((d) => d.goal),
               borderColor: COLOR_GOAL, borderDash: [6, 4], pointRadius: 0, fill: false,
+              xAxisID: 'goalX', // own hidden x axis, see scales below
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false, // fill the 280px-high box
-          scales: { y: { beginAtZero: true, title: { display: true, text: 'kcal' } } },
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'kcal' } },
+            // The bar axis puts points in the CENTER of each bar, so the goal line would stop at the
+            // first/last bar. This hidden axis has offset: false -> first/last point at the chart edges.
+            goalX: { type: 'category', display: false, offset: false },
+          },
         },
       });
     });

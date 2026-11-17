@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -80,6 +80,45 @@ class ApiSmokeTests(TestCase):
 
         planned = sum(len(day) for day in WEEK_PLAN)
         self.assertEqual(Meal.objects.filter(user__username="demo").count(), planned)
+
+    def test_nutritionist_sees_only_own_clients(self):
+        pizza = Dish.objects.get(ml_label="pizza")
+        # A user who is NOT nutri's client (no nutritionist), with a meal today
+        stranger = User.objects.create_user("stranger", password="strongpass123")
+        Meal.objects.create(user=stranger, dish=pizza, eaten_at=timezone.now())
+        # A second nutritionist must not see demo, who is nutri's client
+        User.objects.create_user("nutri2", password="strongpass123", role=User.Role.NUTRITIONIST)
+        demo = User.objects.get(username="demo")
+
+        nutri = self.login("nutri", "nutri12345")
+        self.assertEqual([c["username"] for c in nutri.get("/api/clients/").data["results"]], ["demo"])
+        self.assertEqual(nutri.get(f"/api/clients/{stranger.id}/").status_code, 404)
+        self.assertEqual(nutri.get(f"/api/clients/{stranger.id}/meals/").status_code, 404)
+        payload = {"client": stranger.id, "title": "Hi", "text": "Eat less"}
+        self.assertEqual(nutri.post("/api/recommendations/", payload, format="json").status_code, 400)
+
+        # Own client works: profile with today's calories, last 7 days of meals only
+        Meal.objects.create(user=demo, dish=pizza, eaten_at=timezone.now() - timedelta(days=10))
+        detail = nutri.get(f"/api/clients/{demo.id}/").data
+        self.assertGreater(detail["today_calories"], 0)
+        self.assertEqual(detail["daily_calories"], 1900)
+        meals = nutri.get(f"/api/clients/{demo.id}/meals/", {"days": 7}).data
+        week_start = timezone.localdate() - timedelta(days=6)
+        self.assertTrue(meals)
+        self.assertTrue(all(timezone.localdate(datetime.fromisoformat(m["eaten_at"])) >= week_start for m in meals))
+
+        other = self.login("nutri2", "strongpass123")
+        self.assertEqual(other.get("/api/clients/").data["results"], [])
+        self.assertEqual(other.get(f"/api/clients/{demo.id}/meals/").status_code, 404)
+        # A regular user cannot use the client endpoints at all
+        self.assertEqual(self.login("demo", "demo12345").get(f"/api/clients/{demo.id}/meals/").status_code, 403)
+
+    def test_recommendations_filtered_by_client(self):
+        demo = User.objects.get(username="demo")
+        nutri = self.login("nutri", "nutri12345")
+        nutri.post("/api/recommendations/", {"client": demo.id, "title": "A", "text": "B"}, format="json")
+        res = nutri.get("/api/recommendations/", {"client": demo.id}).data["results"]
+        self.assertTrue(res and all(r["client"] == demo.id for r in res))
 
     def test_users_only_see_own_meals(self):
         other = User.objects.create_user("other", password="strongpass123")
