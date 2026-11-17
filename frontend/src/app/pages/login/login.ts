@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthService } from '../../core/auth.service';
+import { LanguageService } from '../../core/language.service';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +29,7 @@ import { AuthService } from '../../core/auth.service';
 export class LoginPage {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private lang = inject(LanguageService);
 
   username = '';
   password = '';
@@ -38,7 +40,12 @@ export class LoginPage {
     this.loading.set(true);
     this.error.set(false);
     this.auth.login(this.username, this.password).subscribe({
-      next: () => this.router.navigateByUrl(this.auth.homeUrl()), // /clients for nutritionists
+      next: (user) => {
+        // Use the language saved in the profile (only at login, so a page refresh
+        // keeps whatever the user picked in the navbar)
+        this.lang.use(user.preferred_language);
+        this.router.navigateByUrl(this.auth.homeUrl()); // /clients for nutritionists
+      },
       error: () => {
         this.error.set(true);
         this.loading.set(false);

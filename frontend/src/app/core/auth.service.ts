@@ -4,8 +4,11 @@ import { Router } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { LanguageService } from './language.service';
 import { Lang, ProfileForm, User } from './models';
+
+// NOTE: do NOT inject LanguageService/TranslateService here. The HTTP interceptor injects AuthService,
+// and TranslateService makes an HTTP request while it is being created -> circular dependency ->
+// en.json never loads and the UI shows raw keys. Pages switch the language themselves.
 
 const ACCESS_KEY = 'nutriscan.access';
 const REFRESH_KEY = 'nutriscan.refresh';
@@ -14,7 +17,6 @@ const REFRESH_KEY = 'nutriscan.refresh';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private lang = inject(LanguageService);
   private api = `${environment.apiUrl}/auth`;
 
   readonly user = signal<User | null>(null);
@@ -36,9 +38,6 @@ export class AuthService {
           localStorage.setItem(REFRESH_KEY, tokens.refresh);
         }),
         switchMap(() => this.loadMe()),
-        // Use the language saved in the user's profile (only at login, so a page refresh
-        // keeps whatever the user picked in the navbar)
-        tap((user) => this.lang.use(user.preferred_language)),
       );
   }
 
@@ -59,17 +58,11 @@ export class AuthService {
     const form = new FormData();
     for (const [key, value] of Object.entries(data)) form.append(key, value);
     if (avatar) form.append('avatar', avatar);
-    return this.http.patch<User>(`${this.api}/me/`, form).pipe(
-      tap((u) => {
-        this.user.set(u);
-        this.lang.use(u.preferred_language); // switch the UI language right away
-      }),
-    );
+    return this.http.patch<User>(`${this.api}/me/`, form).pipe(tap((u) => this.user.set(u)));
   }
 
-  /** Language buttons in the navbar: switch now and, if logged in, remember it in the profile. */
-  changeLanguage(code: Lang): void {
-    this.lang.use(code);
+  /** Remembers the language in the profile (if logged in), so the next login uses it. */
+  savePreferredLanguage(code: Lang): void {
     const user = this.user();
     if (user && user.preferred_language !== code) {
       this.updateMe({ preferred_language: code }).subscribe({ error: () => {} }); // not critical if it fails

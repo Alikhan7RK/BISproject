@@ -25,6 +25,10 @@ everything in the admin panel.
 
 **Every new UI string must be added to all three translation files** (en, ru, kk).
 Never hardcode user-visible text in templates.
+`npm run check:i18n` (also runs before `npm run build`) fails if a file is invalid JSON,
+the key sets differ, or a value is empty.
+**Never inject `LanguageService`/`TranslateService` into `AuthService`**: the HTTP interceptor
+injects `AuthService`, and that cycle stops `en.json` from loading (the UI shows raw keys).
 
 ## Tech stack
 

@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Lang } from './models';
 
 const LANG_KEY = 'nutriscan.lang';
+const DEFAULT_LANG: Lang = 'en'; // also the fallbackLang in app.config.ts
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
@@ -17,13 +18,24 @@ export class LanguageService {
   readonly current = signal<Lang>('en');
 
   init(): void {
-    const saved = localStorage.getItem(LANG_KEY) as Lang | null;
-    this.use(saved ?? 'en');
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(LANG_KEY);
+    } catch {
+      // storage blocked (private mode) -> just use the default
+    }
+    this.use(saved);
   }
 
-  use(lang: Lang): void {
+  /** Switches the UI language. Anything that is not en/ru/kk (empty, undefined, old value) -> 'en'. */
+  use(value: string | null | undefined): void {
+    const lang: Lang = this.languages.some((l) => l.code === value) ? (value as Lang) : DEFAULT_LANG;
     this.current.set(lang);
-    localStorage.setItem(LANG_KEY, lang);
+    try {
+      localStorage.setItem(LANG_KEY, lang);
+    } catch {
+      // storage blocked -> the language just isn't remembered after a refresh
+    }
     this.translate.use(lang);
     document.documentElement.lang = lang;
   }

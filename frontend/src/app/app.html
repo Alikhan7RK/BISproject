@@ -22,7 +22,7 @@
   <div class="right">
     <div class="langs">
       @for (l of lang.languages; track l.code) {
-        <button type="button" [class.active]="lang.current() === l.code" (click)="auth.changeLanguage(l.code)">{{ l.label }}</button>
+        <button type="button" [class.active]="lang.current() === l.code" (click)="changeLanguage(l.code)">{{ l.label }}</button>
       }
     </div>
     @if (auth.user(); as user) {

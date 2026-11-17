@@ -4,6 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { AuthService } from './core/auth.service';
 import { LanguageService } from './core/language.service';
+import { Lang } from './core/models';
 
 @Component({
   selector: 'app-root',
@@ -17,5 +18,11 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.lang.init();
+  }
+
+  /** Language buttons in the navbar: switch now and remember it in the profile. */
+  changeLanguage(code: Lang): void {
+    this.lang.use(code);
+    this.auth.savePreferredLanguage(code);
   }
 }

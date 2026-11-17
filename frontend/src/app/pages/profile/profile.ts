@@ -173,6 +173,7 @@ export class ProfilePage implements OnInit {
     this.profileError.set('');
     this.auth.updateProfile(this.form, this.avatarFile).subscribe({
       next: (u) => {
+        this.lang.use(u.preferred_language); // switch the UI language right away
         this.avatarFile = null;
         this.avatarUrl.set(u.avatar);
         this.profileSaved.set(true);
