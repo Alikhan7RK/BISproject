@@ -92,3 +92,16 @@ button.link {
 
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+
+// Round user photo (navbar, profile). Set width/height where it is used.
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+  flex-shrink: 0;
+}

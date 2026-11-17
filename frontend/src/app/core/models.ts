@@ -22,6 +22,16 @@ export interface User {
   avatar: string | null;
   bio: string;
   nutritionist: number | null;
+  nutritionist_detail: PublicUser | null; // read only: name/avatar of the chosen nutritionist
+}
+
+/** Fields the user edits on the profile page (sent as multipart, together with the avatar file). */
+export interface ProfileForm {
+  first_name: string;
+  last_name: string;
+  email: string;
+  bio: string;
+  preferred_language: Lang;
 }
 
 export interface PublicUser {

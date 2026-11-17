@@ -94,7 +94,23 @@
   "profile": {
     "goal": "My goal",
     "goalType": "Goal",
-    "day": "day"
+    "day": "day",
+    "avatar": "Photo",
+    "avatarHint": "An image up to 2 MB",
+    "avatarInvalid": "The photo must be an image up to 2 MB",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "bio": "About me",
+    "language": "Interface language",
+    "saveError": "Could not save. Please check the fields.",
+    "emailInvalid": "Please enter a valid email",
+    "myNutritionist": "My nutritionist",
+    "noNutritionist": "You have not chosen a nutritionist yet",
+    "chooseNutritionist": "Choose a nutritionist",
+    "change": "Change",
+    "choose": "Choose",
+    "searchNutritionist": "Search nutritionists"
   },
   "goal": {
     "lose": "Lose weight",

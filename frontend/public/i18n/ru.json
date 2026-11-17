@@ -94,7 +94,23 @@
   "profile": {
     "goal": "Моя цель",
     "goalType": "Цель",
-    "day": "день"
+    "day": "день",
+    "avatar": "Фото",
+    "avatarHint": "Изображение до 2 МБ",
+    "avatarInvalid": "Фото должно быть изображением до 2 МБ",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Email",
+    "bio": "О себе",
+    "language": "Язык интерфейса",
+    "saveError": "Не удалось сохранить. Проверьте поля.",
+    "emailInvalid": "Введите корректный email",
+    "myNutritionist": "Мой нутрициолог",
+    "noNutritionist": "Вы ещё не выбрали нутрициолога",
+    "chooseNutritionist": "Выбрать нутрициолога",
+    "change": "Изменить",
+    "choose": "Выбрать",
+    "searchNutritionist": "Поиск нутрициолога"
   },
   "goal": {
     "lose": "Похудеть",

@@ -149,7 +149,7 @@ npx ng build                                            # must pass with no erro
 - [x] Dashboard: weekly calories bar chart (Chart.js), `GET /api/meals/weekly/?days=7`
 - [ ] History: date filter + pagination
 - [x] Clients page: open client → meals (last 7 days by day) + "write recommendation" form
-- [ ] Profile: edit name/email/bio/avatar, choose a nutritionist
+- [x] Profile: edit name/email/bio/avatar, choose a nutritionist, preferred language
 - [ ] AI advice: `POST /api/advice/` calls an LLM with today's meals + goal (key in `LLM_API_KEY`)
 - [ ] Notifications: badge for unread recommendations
 - [ ] JWT refresh instead of logout on 401

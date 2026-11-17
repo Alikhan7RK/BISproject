@@ -94,7 +94,23 @@
   "profile": {
     "goal": "Менің мақсатым",
     "goalType": "Мақсат",
-    "day": "күн"
+    "day": "күн",
+    "avatar": "Сурет",
+    "avatarHint": "2 МБ-қа дейінгі сурет",
+    "avatarInvalid": "Сурет 2 МБ-тан аспайтын кескін болуы керек",
+    "firstName": "Аты",
+    "lastName": "Тегі",
+    "email": "Email",
+    "bio": "Өзім туралы",
+    "language": "Интерфейс тілі",
+    "saveError": "Сақтау мүмкін болмады. Өрістерді тексеріңіз.",
+    "emailInvalid": "Дұрыс email енгізіңіз",
+    "myNutritionist": "Менің нутрициологым",
+    "noNutritionist": "Сіз әлі нутрициолог таңдамадыңыз",
+    "chooseNutritionist": "Нутрициолог таңдау",
+    "change": "Өзгерту",
+    "choose": "Таңдау",
+    "searchNutritionist": "Нутрициолог іздеу"
   },
   "goal": {
     "lose": "Салмақ тастау",
