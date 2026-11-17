@@ -1,15 +1,19 @@
 <header class="topbar">
-  <a class="brand" routerLink="/dashboard">NutriScan</a>
+  <a class="brand" [routerLink]="auth.homeUrl()">NutriScan</a>
 
+  <!-- The menu depends on the role (the routes are protected by guards as well) -->
   @if (auth.isLoggedIn()) {
     <nav>
-      <a routerLink="/dashboard" routerLinkActive="active">{{ 'nav.dashboard' | translate }}</a>
-      <a routerLink="/add-meal" routerLinkActive="active">{{ 'nav.addMeal' | translate }}</a>
-      <a routerLink="/history" routerLinkActive="active">{{ 'nav.history' | translate }}</a>
-      <a routerLink="/dishes" routerLinkActive="active">{{ 'nav.dishes' | translate }}</a>
-      <a routerLink="/recommendations" routerLinkActive="active">{{ 'nav.recommendations' | translate }}</a>
       @if (auth.isNutritionist()) {
         <a routerLink="/clients" routerLinkActive="active">{{ 'nav.clients' | translate }}</a>
+        <a routerLink="/recommendations" routerLinkActive="active">{{ 'nav.recommendations' | translate }}</a>
+        <a routerLink="/dishes" routerLinkActive="active">{{ 'nav.dishes' | translate }}</a>
+      } @else {
+        <a routerLink="/dashboard" routerLinkActive="active">{{ 'nav.dashboard' | translate }}</a>
+        <a routerLink="/add-meal" routerLinkActive="active">{{ 'nav.addMeal' | translate }}</a>
+        <a routerLink="/history" routerLinkActive="active">{{ 'nav.history' | translate }}</a>
+        <a routerLink="/dishes" routerLinkActive="active">{{ 'nav.dishes' | translate }}</a>
+        <a routerLink="/recommendations" routerLinkActive="active">{{ 'nav.recommendations' | translate }}</a>
       }
       <a routerLink="/search" routerLinkActive="active">{{ 'nav.search' | translate }}</a>
     </nav>

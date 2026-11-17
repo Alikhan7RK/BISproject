@@ -38,7 +38,7 @@ export class LoginPage {
     this.loading.set(true);
     this.error.set(false);
     this.auth.login(this.username, this.password).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigateByUrl(this.auth.homeUrl()), // /clients for nutritionists
       error: () => {
         this.error.set(true);
         this.loading.set(false);

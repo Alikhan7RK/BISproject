@@ -18,6 +18,8 @@ export class AuthService {
   readonly user = signal<User | null>(null);
   readonly isLoggedIn = computed(() => this.user() !== null);
   readonly isNutritionist = computed(() => this.user()?.role === 'nutritionist');
+  /** Start page for the current role: nutritionists work with clients, users with their own dashboard. */
+  readonly homeUrl = computed(() => (this.isNutritionist() ? '/clients' : '/dashboard'));
 
   get accessToken(): string | null {
     return localStorage.getItem(ACCESS_KEY);

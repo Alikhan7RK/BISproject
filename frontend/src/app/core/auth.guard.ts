@@ -16,7 +16,14 @@ export const authGuard: CanActivateFn = () => {
   );
 };
 
+/** Only nutritionists (My clients pages). Others go to their dashboard. */
 export const nutritionistGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   return auth.isNutritionist() ? true : inject(Router).createUrlTree(['/dashboard']);
+};
+
+/** Only regular users (dashboard, add meal, history). Nutritionists go to My clients. */
+export const userOnlyGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.isNutritionist() ? inject(Router).createUrlTree(['/clients']) : true;
 };

@@ -3,7 +3,7 @@ import { Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { Chart, registerables } from 'chart.js';
+import { Chart, Plugin, registerables } from 'chart.js';
 
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
@@ -16,6 +16,33 @@ Chart.register(...registerables); // enable all Chart.js chart types (bar, line,
 const COLOR_OK = '#1f8a4c';
 const COLOR_OVER = '#c0392b';
 const COLOR_GOAL = '#66706a';
+
+const GOAL_DATASET = 2; // index of the "Daily goal" dataset in the chart
+
+/**
+ * Small Chart.js plugin: draws the daily goal as a dashed horizontal line across the WHOLE chart
+ * area (left edge to right edge). A normal line dataset would start and end in the middle of
+ * the first and last bars.
+ */
+function goalLinePlugin(goal: number, datasetIndex: number): Plugin<'bar'> {
+  return {
+    id: 'goalLine',
+    afterDatasetsDraw(chart) {
+      if (!chart.isDatasetVisible(datasetIndex)) return; // hidden via the legend
+      const { ctx, chartArea } = chart;
+      const y = chart.scales['y'].getPixelForValue(goal);
+      ctx.save();
+      ctx.strokeStyle = COLOR_GOAL;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(chartArea.left, y);
+      ctx.lineTo(chartArea.right, y);
+      ctx.stroke();
+      ctx.restore();
+    },
+  };
+}
 
 // Translation keys for day names; index = Date.getDay() (0 = Sunday)
 const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((d) => `dashboard.weekdays.${d}`);
@@ -113,6 +140,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       // Two bar datasets so the legend explains both colors: each day has a value in only one of them
       const within = this.week.map((d) => (d.calories <= d.goal ? d.calories : null));
       const above = this.week.map((d) => (d.calories > d.goal ? d.calories : null));
+      const goal = this.week[this.week.length - 1].goal; // the user's current goal (same for every day)
 
       this.chart?.destroy(); // Chart.js cannot change everything in place, so we draw a new one
       this.chart = new Chart(this.canvas().nativeElement, {
@@ -123,9 +151,10 @@ export class DashboardPage implements OnInit, OnDestroy {
             { label: t['dashboard.withinGoal'], data: within, backgroundColor: COLOR_OK, grouped: false },
             { label: t['dashboard.aboveGoal'], data: above, backgroundColor: COLOR_OVER, grouped: false },
             {
-              type: 'line', label: t['dashboard.dailyGoal'], data: this.week.map((d) => d.goal),
-              borderColor: COLOR_GOAL, borderDash: [6, 4], pointRadius: 0, fill: false,
-              xAxisID: 'goalX', // own hidden x axis, see scales below
+              // Empty line dataset: it only gives "Daily goal" its legend entry (and lets the user
+              // hide it by clicking the legend). The line itself is drawn by goalLinePlugin.
+              type: 'line', label: t['dashboard.dailyGoal'], data: this.week.map(() => null),
+              borderColor: COLOR_GOAL, backgroundColor: 'transparent', borderDash: [6, 4], pointRadius: 0,
             },
           ],
         },
@@ -133,12 +162,11 @@ export class DashboardPage implements OnInit, OnDestroy {
           responsive: true,
           maintainAspectRatio: false, // fill the 280px-high box
           scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'kcal' } },
-            // The bar axis puts points in the CENTER of each bar, so the goal line would stop at the
-            // first/last bar. This hidden axis has offset: false -> first/last point at the chart edges.
-            goalX: { type: 'category', display: false, offset: false },
+            // suggestedMax: keep the goal line visible even if every day is below the goal
+            y: { beginAtZero: true, suggestedMax: goal * 1.1, title: { display: true, text: 'kcal' } },
           },
         },
+        plugins: [goalLinePlugin(goal, GOAL_DATASET)],
       });
     });
   }
