@@ -74,7 +74,8 @@
     "searchPlaceholder": "Type to search…",
     "nothingFound": "Nothing found",
     "kcal": "kcal",
-    "kcalPer100": "kcal / 100 g"
+    "kcalPer100": "kcal / 100 g",
+    "g": "g"
   },
   "dishes": {
     "allCategories": "All categories"

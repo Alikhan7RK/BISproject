@@ -110,9 +110,9 @@ const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB, same limit as the backend
             </select>
           </label>
           <label>{{ 'common.kcal' | translate }} / {{ 'profile.day' | translate }}<input type="number" [(ngModel)]="g.daily_calories" /></label>
-          <label>{{ 'nutrients.protein' | translate }}, g<input type="number" [(ngModel)]="g.daily_protein" /></label>
-          <label>{{ 'nutrients.fat' | translate }}, g<input type="number" [(ngModel)]="g.daily_fat" /></label>
-          <label>{{ 'nutrients.carbs' | translate }}, g<input type="number" [(ngModel)]="g.daily_carbs" /></label>
+          <label>{{ 'nutrients.protein' | translate }}, {{ 'common.g' | translate }}<input type="number" [(ngModel)]="g.daily_protein" /></label>
+          <label>{{ 'nutrients.fat' | translate }}, {{ 'common.g' | translate }}<input type="number" [(ngModel)]="g.daily_fat" /></label>
+          <label>{{ 'nutrients.carbs' | translate }}, {{ 'common.g' | translate }}<input type="number" [(ngModel)]="g.daily_carbs" /></label>
         </div>
         <button class="btn" type="button" (click)="save(g)">{{ 'common.save' | translate }}</button>
         @if (saved()) { <span class="muted"> ✓ {{ 'common.saved' | translate }}</span> }

@@ -31,7 +31,7 @@ import { Meal } from '../../core/models';
               <td>{{ m.eaten_at | date: 'dd.MM.yyyy HH:mm' }}</td>
               <td>{{ lang.localName(m.dish_detail) }}</td>
               <td>{{ 'mealType.' + m.meal_type | translate }}</td>
-              <td>{{ m.portion_grams }} g</td>
+              <td>{{ m.portion_grams }} {{ 'common.g' | translate }}</td>
               <td>{{ m.calories | number: '1.0-0' }}</td>
               <td>{{ m.ai_confidence != null ? (m.ai_confidence * 100 | number: '1.0-0') + '%' : '—' }}</td>
               <td><button class="link" type="button" (click)="remove(m)">{{ 'common.delete' | translate }}</button></td>

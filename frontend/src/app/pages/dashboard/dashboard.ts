@@ -66,9 +66,9 @@ const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((d) =
           <div [style.width.%]="percent(s.totals.calories, s.goal.daily_calories)"></div>
         </div>
         <div class="grid" style="margin-top: 16px">
-          <div>{{ 'nutrients.protein' | translate }}: {{ s.totals.protein }} / {{ s.goal.daily_protein }} g</div>
-          <div>{{ 'nutrients.fat' | translate }}: {{ s.totals.fat }} / {{ s.goal.daily_fat }} g</div>
-          <div>{{ 'nutrients.carbs' | translate }}: {{ s.totals.carbs }} / {{ s.goal.daily_carbs }} g</div>
+          <div>{{ 'nutrients.protein' | translate }}: {{ s.totals.protein }} / {{ s.goal.daily_protein }} {{ 'common.g' | translate }}</div>
+          <div>{{ 'nutrients.fat' | translate }}: {{ s.totals.fat }} / {{ s.goal.daily_fat }} {{ 'common.g' | translate }}</div>
+          <div>{{ 'nutrients.carbs' | translate }}: {{ s.totals.carbs }} / {{ s.goal.daily_carbs }} {{ 'common.g' | translate }}</div>
         </div>
       </div>
     }

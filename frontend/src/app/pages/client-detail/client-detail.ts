@@ -53,7 +53,7 @@ function dayKey(d: Date): string {
             </div>
             @for (m of g.meals; track m.id) {
               <div class="row" style="justify-content: space-between; padding: 4px 0">
-                <span>{{ 'mealType.' + m.meal_type | translate }} · {{ lang.localName(m.dish_detail) }} · {{ m.portion_grams }} g</span>
+                <span>{{ 'mealType.' + m.meal_type | translate }} · {{ lang.localName(m.dish_detail) }} · {{ m.portion_grams }} {{ 'common.g' | translate }}</span>
                 <span class="muted">{{ m.calories | number: '1.0-0' }} {{ 'common.kcal' | translate }} · {{ m.eaten_at | date: 'HH:mm' }}</span>
               </div>
             } @empty {
