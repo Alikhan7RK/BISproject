@@ -61,7 +61,6 @@
     "confirm": "Подтвердите и сохраните",
     "portion": "Порция, г",
     "mealType": "Приём пищи",
-    "kcalPer100": "ккал / 100 г",
     "lowConfidence": "Не уверены, что это — выберите блюдо вручную",
     "chooseManually": "Не то? Выберите вручную",
     "searchDish": "Поиск блюда в каталоге",
@@ -73,7 +72,9 @@
     "saved": "Сохранено",
     "delete": "Удалить",
     "searchPlaceholder": "Введите для поиска…",
-    "nothingFound": "Ничего не найдено"
+    "nothingFound": "Ничего не найдено",
+    "kcal": "ккал",
+    "kcalPer100": "ккал / 100 г"
   },
   "dishes": {
     "allCategories": "Все категории"

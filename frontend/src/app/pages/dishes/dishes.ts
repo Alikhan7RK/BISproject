@@ -23,7 +23,7 @@ import { Dish, DishCategory } from '../../core/models';
         <div class="card">
           <h2>{{ lang.localName(d) }}</h2>
           <p class="muted">{{ lang.localName(d.category) }}</p>
-          <p><strong>{{ d.calories }}</strong> kcal / 100 g</p>
+          <p><strong>{{ d.calories }}</strong> {{ 'common.kcalPer100' | translate }}</p>
           <p class="muted">P {{ d.protein }} · F {{ d.fat }} · C {{ d.carbs }}</p>
         </div>
       } @empty {

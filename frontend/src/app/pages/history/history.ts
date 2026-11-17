@@ -20,7 +20,7 @@ import { Meal } from '../../core/models';
             <th>{{ 'history.dish' | translate }}</th>
             <th>{{ 'addMeal.mealType' | translate }}</th>
             <th>{{ 'addMeal.portion' | translate }}</th>
-            <th>kcal</th>
+            <th>{{ 'common.kcal' | translate }}</th>
             <th>AI</th>
             <th></th>
           </tr>

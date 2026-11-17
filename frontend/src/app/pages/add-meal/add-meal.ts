@@ -58,7 +58,7 @@ const MIN_CONFIDENCE = 0.6;
             <span>
               <strong>{{ p.dish ? lang.localName(p.dish) : p.label }}</strong>
               — {{ p.confidence | percent: '1.0-0' }}
-              @if (p.dish) { <span class="muted">· {{ p.dish.calories }} {{ 'addMeal.kcalPer100' | translate }}</span> }
+              @if (p.dish) { <span class="muted">· {{ p.dish.calories }} {{ 'common.kcalPer100' | translate }}</span> }
               @else { <span class="muted">· {{ 'addMeal.notInCatalog' | translate }}</span> }
             </span>
           </label>
@@ -79,7 +79,7 @@ const MIN_CONFIDENCE = 0.6;
               <button class="btn secondary" type="button" (click)="select(d, null)">
                 {{ lang.localName(d) }}
               </button>
-              <span class="muted">{{ d.calories }} {{ 'addMeal.kcalPer100' | translate }}</span>
+              <span class="muted">{{ d.calories }} {{ 'common.kcalPer100' | translate }}</span>
             </div>
           } @empty {
             <p class="muted">{{ 'common.nothingFound' | translate }}</p>
@@ -102,7 +102,7 @@ const MIN_CONFIDENCE = 0.6;
           </label>
         </div>
         <p>
-          {{ lang.localName(dish) }}: <strong>{{ +dish.calories * portion / 100 | number: '1.0-0' }} kcal</strong>
+          {{ lang.localName(dish) }}: <strong>{{ +dish.calories * portion / 100 | number: '1.0-0' }} {{ 'common.kcal' | translate }}</strong>
         </p>
         <button class="btn" type="button" (click)="save()" [disabled]="saving()">{{ 'common.save' | translate }}</button>
       </div>

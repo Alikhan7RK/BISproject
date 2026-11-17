@@ -22,7 +22,7 @@ import { GlobalSearchResult } from '../../core/models';
     @if (result(); as r) {
       <div class="card">
         <h2>{{ 'nav.dishes' | translate }} ({{ r.dishes.length }})</h2>
-        @for (d of r.dishes; track d.id) { <div>{{ lang.localName(d) }} · {{ d.calories }} kcal / 100 g</div> }
+        @for (d of r.dishes; track d.id) { <div>{{ lang.localName(d) }} · {{ d.calories }} {{ 'common.kcalPer100' | translate }}</div> }
       </div>
       <div class="card">
         <h2>{{ 'search.myMeals' | translate }} ({{ r.meals.length }})</h2>

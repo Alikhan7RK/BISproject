@@ -61,7 +61,6 @@
     "confirm": "Confirm and save",
     "portion": "Portion, g",
     "mealType": "Meal",
-    "kcalPer100": "kcal / 100 g",
     "lowConfidence": "Not sure what this is — please choose the dish manually",
     "chooseManually": "Not right? Choose manually",
     "searchDish": "Search the dish catalog",
@@ -73,7 +72,9 @@
     "saved": "Saved",
     "delete": "Delete",
     "searchPlaceholder": "Type to search…",
-    "nothingFound": "Nothing found"
+    "nothingFound": "Nothing found",
+    "kcal": "kcal",
+    "kcalPer100": "kcal / 100 g"
   },
   "dishes": {
     "allCategories": "All categories"

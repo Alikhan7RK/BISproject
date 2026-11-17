@@ -18,7 +18,7 @@ import { Client } from '../../core/models';
           <p class="muted">{{ c.username }}</p>
           <p>
             {{ 'clients.today' | translate }}:
-            <strong>{{ c.today_calories }}</strong> / {{ c.daily_calories }} kcal
+            <strong>{{ c.today_calories }}</strong> / {{ c.daily_calories }} {{ 'common.kcal' | translate }}
           </p>
           <div class="progress" [class.over]="c.today_calories > c.daily_calories">
             <div [style.width.%]="percent(c)"></div>

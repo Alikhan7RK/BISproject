@@ -48,13 +48,13 @@ function dayKey(d: Date): string {
               <strong>{{ g.date | date: 'dd.MM.yyyy' }}</strong>
               <!-- daily total, red when above the client's goal -->
               <span [class.error]="g.total > c.daily_calories">
-                {{ 'clients.total' | translate }}: <strong>{{ g.total | number: '1.0-0' }}</strong> / {{ c.daily_calories }} kcal
+                {{ 'clients.total' | translate }}: <strong>{{ g.total | number: '1.0-0' }}</strong> / {{ c.daily_calories }} {{ 'common.kcal' | translate }}
               </span>
             </div>
             @for (m of g.meals; track m.id) {
               <div class="row" style="justify-content: space-between; padding: 4px 0">
                 <span>{{ 'mealType.' + m.meal_type | translate }} · {{ lang.localName(m.dish_detail) }} · {{ m.portion_grams }} g</span>
-                <span class="muted">{{ m.calories | number: '1.0-0' }} kcal · {{ m.eaten_at | date: 'HH:mm' }}</span>
+                <span class="muted">{{ m.calories | number: '1.0-0' }} {{ 'common.kcal' | translate }} · {{ m.eaten_at | date: 'HH:mm' }}</span>
               </div>
             } @empty {
               <p class="muted" style="margin: 4px 0">{{ 'clients.noMealsDay' | translate }}</p>
