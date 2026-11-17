@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
@@ -49,6 +51,35 @@ class ApiSmokeTests(TestCase):
         self.assertEqual(res.data["calories"], 266.0)
         summary = client.get("/api/meals/summary/").data
         self.assertGreaterEqual(summary["totals"]["calories"], 266.0)
+
+    def test_weekly_calories(self):
+        # A fresh user: one meal today, one 3 days ago, nothing else
+        user = User.objects.create_user("weekly", password="strongpass123")
+        pizza = Dish.objects.get(ml_label="pizza")  # 266 kcal / 100 g
+        now = timezone.now()
+        Meal.objects.create(user=user, dish=pizza, portion_grams=100, eaten_at=now)
+        Meal.objects.create(user=user, dish=pizza, portion_grams=200, eaten_at=now - timedelta(days=3))
+        # Another user's meal must not be counted
+        Meal.objects.create(user=User.objects.get(username="demo"), dish=pizza, portion_grams=500, eaten_at=now)
+
+        client = self.login("weekly", "strongpass123")
+        data = client.get("/api/meals/weekly/", {"days": 7}).data
+        self.assertEqual(len(data), 7)
+        self.assertEqual(data[-1]["date"], timezone.localdate().isoformat())  # oldest first, today last
+        self.assertEqual([d["calories"] for d in data], [0, 0, 0, 532, 0, 0, 266])
+        self.assertEqual(data[0]["goal"], 2000)  # default goal
+        self.assertEqual(client.get("/api/meals/weekly/", {"days": "abc"}).status_code, 400)
+
+    def test_seed_gives_demo_meals_every_day_of_the_week(self):
+        call_command("seed_demo", verbosity=0)  # second run must not duplicate meals
+        client = self.login("demo", "demo12345")
+        data = client.get("/api/meals/weekly/").data
+        self.assertTrue(all(d["calories"] > 0 for d in data), data)
+        self.assertTrue(any(d["calories"] > d["goal"] for d in data), "some bars should be above the goal")
+        from nutrition.management.commands.seed_demo import WEEK_PLAN
+
+        planned = sum(len(day) for day in WEEK_PLAN)
+        self.assertEqual(Meal.objects.filter(user__username="demo").count(), planned)
 
     def test_users_only_see_own_meals(self):
         other = User.objects.create_user("other", password="strongpass123")

@@ -89,6 +89,13 @@ export interface DaySummary {
   goal: NutritionGoal;
 }
 
+/** One day of GET /api/meals/weekly/ */
+export interface DayCalories {
+  date: string; // YYYY-MM-DD
+  calories: number;
+  goal: number;
+}
+
 export interface Prediction {
   label: string;
   confidence: number;

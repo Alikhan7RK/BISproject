@@ -146,7 +146,7 @@ npx ng build                                            # must pass with no erro
 - [x] Train the 20-class Food-101 model in Colab, test with real photos
 - [ ] Retrain in Colab on 28 classes (Food-101 + CAFD), replace the weights, test with real photos
 - [ ] Add-meal: manual dish search when the AI is wrong; 503 → friendly "model not ready" message
-- [ ] Dashboard: weekly calories bar chart (Chart.js)
+- [x] Dashboard: weekly calories bar chart (Chart.js), `GET /api/meals/weekly/?days=7`
 - [ ] History: date filter + pagination
 - [ ] Clients page: open client → meals + "write recommendation" form
 - [ ] Profile: edit name/email/bio/avatar, choose a nutritionist

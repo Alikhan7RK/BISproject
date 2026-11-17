@@ -61,6 +61,22 @@ DISHES = [
     ("blini", "breakfast", "Blini (thin pancakes)", "Блины (тонкие)", "Жұқа құймақ", 220, 6, 8, 30, 150),
 ]
 
+# Demo user's meals: index 0 = today, 1 = yesterday, ... 6 = six days ago.
+# Default portions, demo goal is 1900 kcal: days 4 and 6 are above it (red bars on the chart).
+WEEK_PLAN = [
+    [("omelette", "breakfast"), ("caesar_salad", "lunch")],                                       # ~706 kcal
+    [("pancakes", "breakfast"), ("ramen", "lunch"), ("steak", "dinner")],                         # ~1377
+    [("pizza", "lunch"), ("ice_cream", "snack"), ("plov", "dinner")],                             # ~1339
+    [("omelette", "breakfast"), ("beshbarmak", "lunch"), ("shashlik", "dinner"),
+     ("chocolate_cake", "snack")],                                                                # ~1712
+    [("pancakes", "breakfast"), ("pizza", "lunch"), ("doner", "dinner"), ("donuts", "snack"),
+     ("cheesecake", "snack")],                                                                    # ~2264
+    [("greek_salad", "lunch"), ("lagman", "dinner"), ("steak", "dinner")],                        # ~1297
+    [("blini", "breakfast"), ("plov", "lunch"), ("manty", "dinner"), ("baursak", "snack"),
+     ("chocolate_cake", "snack")],                                                                # ~2180
+]
+MEAL_TIMES = {"breakfast": (8, 30), "lunch": (13, 0), "snack": (16, 30), "dinner": (19, 0)}
+
 USERS = [
     # username, password, role
     ("admin", "admin12345", User.Role.ADMIN),
@@ -103,18 +119,24 @@ class Command(BaseCommand):
         demo.save()
         NutritionGoal.objects.get_or_create(user=demo, defaults={"goal_type": "lose", "daily_calories": 1900})
 
-        if not Meal.objects.filter(user=demo).exists():
-            now = timezone.now()
-            for days_ago, label, meal_type in [
-                (0, "omelette", "breakfast"), (0, "caesar_salad", "lunch"),
-                (1, "pancakes", "breakfast"), (1, "ramen", "lunch"), (1, "steak", "dinner"),
-                (2, "pizza", "lunch"), (2, "ice_cream", "snack"),
-            ]:
+        # Meals for each of the last 7 days, so the weekly chart looks good in the demo.
+        # A day is filled only if demo has no meals on it yet -> safe to run more than once,
+        # and running it again on a later day fills the new days.
+        now = timezone.localtime()
+        today = now.date()
+        for days_ago, day_meals in enumerate(WEEK_PLAN):
+            day = today - timedelta(days=days_ago)
+            if Meal.objects.filter(user=demo, eaten_at__date=day).exists():
+                continue
+            for label, meal_type in day_meals:
                 dish = Dish.objects.get(ml_label=label)
+                hour, minute = MEAL_TIMES[meal_type]
+                eaten_at = now.replace(year=day.year, month=day.month, day=day.day, hour=hour, minute=minute,
+                                       second=0, microsecond=0)
                 Meal.objects.create(
                     user=demo, dish=dish, meal_type=meal_type,
                     portion_grams=dish.default_portion_grams,
-                    eaten_at=now - timedelta(days=days_ago),
+                    eaten_at=min(eaten_at, now),  # today's meals never in the future
                 )
 
         Recommendation.objects.get_or_create(

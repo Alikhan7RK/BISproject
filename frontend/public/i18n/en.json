@@ -25,7 +25,12 @@
     "hello": "Hello, {{name}}!",
     "today": "Today",
     "todayMeals": "Today's meals",
-    "noMeals": "No meals yet today"
+    "noMeals": "No meals yet today",
+    "week": "Calories this week",
+    "withinGoal": "Within goal",
+    "aboveGoal": "Above goal",
+    "dailyGoal": "Daily goal",
+    "weekdays": { "mon": "Mon", "tue": "Tue", "wed": "Wed", "thu": "Thu", "fri": "Fri", "sat": "Sat", "sun": "Sun" }
   },
   "nutrients": {
     "protein": "Protein",

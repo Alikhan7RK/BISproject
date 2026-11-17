@@ -1,12 +1,24 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Chart, registerables } from 'chart.js';
 
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 import { LanguageService } from '../../core/language.service';
-import { DaySummary, Meal } from '../../core/models';
+import { DayCalories, DaySummary, Meal } from '../../core/models';
+
+Chart.register(...registerables); // enable all Chart.js chart types (bar, line, ...)
+
+// Chart colors (same as --primary / --danger in styles.scss)
+const COLOR_OK = '#1f8a4c';
+const COLOR_OVER = '#c0392b';
+const COLOR_GOAL = '#66706a';
+
+// Translation keys for day names; index = Date.getDay() (0 = Sunday)
+const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((d) => `dashboard.weekdays.${d}`);
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +46,13 @@ import { DaySummary, Meal } from '../../core/models';
       </div>
     }
 
-    <!-- TODO: weekly calories chart (Chart.js is installed) -->
+    <!-- Weekly chart: bars = calories per day, dashed line = daily goal -->
+    <div class="card">
+      <h2>{{ 'dashboard.week' | translate }}</h2>
+      <div style="position: relative; height: 280px">
+        <canvas #weekChart></canvas>
+      </div>
+    </div>
 
     <div class="card">
       <h2>{{ 'dashboard.todayMeals' | translate }}</h2>
@@ -49,18 +67,74 @@ import { DaySummary, Meal } from '../../core/models';
     </div>
   `,
 })
-export class DashboardPage implements OnInit {
+export class DashboardPage implements OnInit, OnDestroy {
   protected auth = inject(AuthService);
   protected lang = inject(LanguageService);
   private api = inject(ApiService);
+  private translate = inject(TranslateService);
 
   summary = signal<DaySummary | null>(null);
   meals = signal<Meal[]>([]);
+
+  private canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('weekChart');
+  private week: DayCalories[] = [];
+  private chart: Chart | null = null;
+
+  constructor() {
+    // Redraw the chart with new labels when the user switches EN / RU / KZ
+    this.translate.onLangChange.pipe(takeUntilDestroyed()).subscribe(() => this.drawChart());
+  }
 
   ngOnInit(): void {
     const today = new Date().toISOString().slice(0, 10);
     this.api.summary(today).subscribe((s) => this.summary.set(s));
     this.api.meals(today).subscribe((page) => this.meals.set(page.results));
+    this.api.weekly(7).subscribe((days) => {
+      this.week = days;
+      this.drawChart();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.chart?.destroy();
+  }
+
+  /** (Re)creates the weekly chart. Called when data arrives and when the language changes. */
+  private drawChart(): void {
+    if (!this.week.length) return;
+    const keys = ['dashboard.withinGoal', 'dashboard.aboveGoal', 'dashboard.dailyGoal', ...WEEKDAY_KEYS];
+    // get() waits until the language file is loaded, so we never show raw keys
+    this.translate.get(keys).subscribe((t) => {
+      const labels = this.week.map((d) => {
+        const [y, m, day] = d.date.split('-').map(Number);
+        const weekday = new Date(y, m - 1, day).getDay(); // local date, no time-zone shift
+        return `${t[WEEKDAY_KEYS[weekday]]} ${day}`;
+      });
+      // Two bar datasets so the legend explains both colors: each day has a value in only one of them
+      const within = this.week.map((d) => (d.calories <= d.goal ? d.calories : null));
+      const above = this.week.map((d) => (d.calories > d.goal ? d.calories : null));
+
+      this.chart?.destroy(); // Chart.js cannot change everything in place, so we draw a new one
+      this.chart = new Chart(this.canvas().nativeElement, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: t['dashboard.withinGoal'], data: within, backgroundColor: COLOR_OK, grouped: false },
+            { label: t['dashboard.aboveGoal'], data: above, backgroundColor: COLOR_OVER, grouped: false },
+            {
+              type: 'line', label: t['dashboard.dailyGoal'], data: this.week.map((d) => d.goal),
+              borderColor: COLOR_GOAL, borderDash: [6, 4], pointRadius: 0, fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // fill the 280px-high box
+          scales: { y: { beginAtZero: true, title: { display: true, text: 'kcal' } } },
+        },
+      });
+    });
   }
 
   percent(value: number, goal: number): number {

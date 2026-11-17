@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -44,6 +45,9 @@ class DishViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
 
+MAX_WEEKLY_DAYS = 31  # upper limit for /api/meals/weekly/?days=
+
+
 class MealViewSet(viewsets.ModelViewSet):
     """The logged-in user's own meals (?search=, ?date=YYYY-MM-DD, ?meal_type=)."""
 
@@ -79,6 +83,31 @@ class MealViewSet(viewsets.ModelViewSet):
             "totals": {k: round(v, 1) for k, v in totals.items()},
             "goal": NutritionGoalSerializer(goal).data,
         })
+
+    @action(detail=False, methods=["get"])
+    def weekly(self, request):
+        """Calories per day for the last N days (?days=7, max 31), oldest first. Days without meals = 0."""
+        try:
+            days = int(request.query_params.get("days", 7))
+        except ValueError:
+            return Response({"detail": "days must be a number."}, status=400)
+        days = max(1, min(days, MAX_WEEKLY_DAYS))
+
+        today = timezone.localdate()  # today in the project time zone (Asia/Almaty)
+        start = today - timedelta(days=days - 1)
+        per_day = {start + timedelta(days=i): 0.0 for i in range(days)}  # every day starts at 0
+
+        meals = Meal.objects.filter(user=request.user, eaten_at__date__gte=start).select_related("dish")
+        for meal in meals:
+            day = timezone.localdate(meal.eaten_at)
+            if day in per_day:  # skip meals logged in the future
+                per_day[day] += meal.calories
+
+        goal, _ = NutritionGoal.objects.get_or_create(user=request.user)
+        return Response([
+            {"date": day.isoformat(), "calories": round(kcal), "goal": goal.daily_calories}
+            for day, kcal in per_day.items()
+        ])
 
 
 class MyGoalView(generics.RetrieveUpdateAPIView):

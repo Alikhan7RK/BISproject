@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import {
+  DayCalories,
   DaySummary,
   Dish,
   DishCategory,
@@ -61,6 +62,12 @@ export class ApiService {
   summary(date?: string) {
     const params = date ? new HttpParams().set('date', date) : undefined;
     return this.http.get<DaySummary>(`${this.api}/meals/summary/`, { params });
+  }
+  /** Calories per day for the last `days` days, oldest first. */
+  weekly(days = 7) {
+    return this.http.get<DayCalories[]>(`${this.api}/meals/weekly/`, {
+      params: new HttpParams().set('days', days),
+    });
   }
 
   // Goal

@@ -8,8 +8,11 @@ import { ApiService } from '../../core/api.service';
 import { LanguageService } from '../../core/language.service';
 import { Dish, MealType, Prediction } from '../../core/models';
 
-/** Below this confidence the AI's best guess is not pre-selected. */
-const MIN_CONFIDENCE = 0.5;
+/**
+ * Below this confidence the AI's best guess is NOT pre-selected: the user sees a warning
+ * and chooses the dish. 0.5 was too low (a 50% "fried rice" was auto-selected on real photos).
+ */
+const MIN_CONFIDENCE = 0.6;
 
 /**
  * The main AI feature:
